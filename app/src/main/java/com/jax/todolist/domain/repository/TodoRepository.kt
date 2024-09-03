@@ -1,5 +1,6 @@
 package com.jax.todolist.domain.repository
 
+import androidx.lifecycle.LiveData
 import com.jax.todolist.domain.entity.TodoItem
 
 interface TodoRepository {
@@ -8,5 +9,5 @@ interface TodoRepository {
     fun removeTodoItem(todoItem: TodoItem)
     fun editTodoItem(todoItem: TodoItem)
     fun getTodoItem(todoItemId: Int): TodoItem
-    fun getTodoList(): List<TodoItem>
+    fun getTodoList(): LiveData<List<TodoItem>>
 }

@@ -6,7 +6,7 @@ import com.jax.todolist.domain.repository.TodoRepository
 class RemoveTodoItemUseCase(
     private val todoListRepository: TodoRepository
 ) {
-    fun removeTodoItem(todoItem: TodoItem) {
+    operator fun invoke(todoItem: TodoItem) {
         todoListRepository.removeTodoItem(todoItem)
     }
 }

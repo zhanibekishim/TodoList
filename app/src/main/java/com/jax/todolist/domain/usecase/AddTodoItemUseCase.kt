@@ -6,7 +6,7 @@ import com.jax.todolist.domain.repository.TodoRepository
 class AddTodoItemUseCase(
     private val repository: TodoRepository
 ){
-    fun addTodoItem(todoItem: TodoItem) {
+    operator fun invoke(todoItem: TodoItem) {
         repository.addTodoItem(todoItem)
     }
 }
