@@ -29,15 +29,19 @@ class TodoAdapter : ListAdapter<TodoItem, TodoViewHolder>(TodoDiffCallBack()) {
             onTodoItemLongClickListener?.invoke(todoItem)
             true
         }
+        holder.itemView.setOnClickListener {
+            onTodoItemClickListener?.invoke(todoItem)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
         val todoItem = getItem(position)
-        val enabledOffset = if (todoItem.enabled) 0 else 1
+        val enabledOffset = if (todoItem.enabled) ENABLED_OFFSET else DISABLED_OFFSET
         return when (todoItem.level) {
             Level.LOW -> ENABLED_LOW + enabledOffset
             Level.MEDIUM -> ENABLED_MID + enabledOffset
             Level.HIGH -> ENABLED_HIGH + enabledOffset
+            else -> throw RuntimeException("Unknown level: ${todoItem.level}")
         }
     }
 
@@ -49,5 +53,7 @@ class TodoAdapter : ListAdapter<TodoItem, TodoViewHolder>(TodoDiffCallBack()) {
         const val ENABLED_HIGH = 5
         const val DISABLED_HIGH = 6
         const val MAX_POOL_SIZE = 30
+        private const val ENABLED_OFFSET = 0
+        private const val DISABLED_OFFSET = 1
     }
 }

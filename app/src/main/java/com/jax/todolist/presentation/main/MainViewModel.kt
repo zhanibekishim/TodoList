@@ -9,7 +9,7 @@ import com.jax.todolist.domain.usecase.RemoveTodoItemUseCase
 
 class MainViewModel:ViewModel() {
 
-    private val repository = TodoRepositoryImpl()
+    private val repository = TodoRepositoryImpl
 
     private val getTodoListUseCase = GetTodoListUseCase(repository)
     private val editTodoItemUseCase = EditTodoItemUseCase(repository)

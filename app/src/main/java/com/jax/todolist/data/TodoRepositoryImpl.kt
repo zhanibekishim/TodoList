@@ -1,5 +1,6 @@
 package com.jax.todolist.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jax.todolist.domain.entity.Level
@@ -7,7 +8,7 @@ import com.jax.todolist.domain.entity.TodoItem
 import com.jax.todolist.domain.repository.TodoRepository
 import kotlin.random.Random
 
-class TodoRepositoryImpl : TodoRepository {
+object TodoRepositoryImpl : TodoRepository {
 
     private val todoListLD = MutableLiveData<List<TodoItem>>()
     private val todoList = sortedSetOf<TodoItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
@@ -34,8 +35,8 @@ class TodoRepositoryImpl : TodoRepository {
         }
         todoList.add(todoItem)
         updateTodoList()
+        Log.d("Adding process", "Added TodoItem: $todoItem")
     }
-
 
     override fun removeTodoItem(todoItem: TodoItem) {
         todoList.remove(todoItem)
