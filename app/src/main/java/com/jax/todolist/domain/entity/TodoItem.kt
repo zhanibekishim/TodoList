@@ -1,9 +1,10 @@
 package com.jax.todolist.domain.entity
 
 data class TodoItem(
-    val name: String,
+    val title: String,
     val description: String,
     val enabled: Boolean,
+    val level: Level,
     var id: Int = UNDEFINED_ID
 ){
     companion object{

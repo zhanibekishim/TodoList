@@ -2,25 +2,29 @@ package com.jax.todolist.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.jax.todolist.domain.entity.Level
 import com.jax.todolist.domain.entity.TodoItem
 import com.jax.todolist.domain.repository.TodoRepository
+import kotlin.random.Random
 
 class TodoRepositoryImpl : TodoRepository {
 
     private val todoListLD = MutableLiveData<List<TodoItem>>()
-    private val todoList = mutableListOf<TodoItem>()
+    private val todoList = sortedSetOf<TodoItem>({ o1, o2 -> o1.id.compareTo(o2.id) })
     private var autoIncrementId = 0
 
     init {
         for (i in 0 until 10) {
             val todoItem = TodoItem(
                 id = autoIncrementId++,
-                name = "Name $i",
+                title = "Name $i",
                 description = "Description $i",
-                enabled = true
+                level = Level.LOW,
+                enabled = Random.nextBoolean()
             )
             todoList.add(todoItem)
         }
+        todoListLD.value = todoList.toList()
     }
 
     override fun addTodoItem(todoItem: TodoItem) {

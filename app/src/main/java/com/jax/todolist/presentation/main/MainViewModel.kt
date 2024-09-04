@@ -1,4 +1,4 @@
-package com.jax.todolist.presentation
+package com.jax.todolist.presentation.main
 
 import androidx.lifecycle.ViewModel
 import com.jax.todolist.data.TodoRepositoryImpl
