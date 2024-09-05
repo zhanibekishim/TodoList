@@ -3,48 +3,37 @@ package com.jax.todolist.presentation.detail
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import com.jax.todolist.R
 import com.jax.todolist.databinding.ActivityTodoItemBinding
-import com.jax.todolist.domain.entity.Level
 import com.jax.todolist.domain.entity.TodoItem
 
-class TodoItemActivity : AppCompatActivity() {
+class TodoItemActivity: AppCompatActivity(), TodoItemFragment.OnEditingFinishedEvent {
 
-    private val viewModel by lazy {
-        ViewModelProvider(this)[TodoItemViewModel::class.java]
-    }
     private val binding by lazy {
         ActivityTodoItemBinding.inflate(layoutInflater)
     }
 
-    private var screen_mode = UNKNOWN_MODE
+    private var screenMode = UNKNOWN_MODE
     private var todoItemId = TodoItem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         parseIntent()
-        setUpLevelListView()
         launchRightMode()
-        observerViewModel()
-        onTextChangedListeners()
     }
 
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
             throw RuntimeException("Unknown screen mode")
         }
-        screen_mode = intent.getStringExtra(EXTRA_SCREEN_MODE).toString()
-
-        if (screen_mode != MODE_ADD && screen_mode != MODE_EDIT) {
+        screenMode = intent.getStringExtra(EXTRA_SCREEN_MODE).toString()
+        if (screenMode != MODE_ADD && screenMode != MODE_EDIT) {
             throw RuntimeException("Unknown screen mode")
         }
-        if (screen_mode == MODE_EDIT) {
+        if (screenMode == MODE_EDIT) {
             if (!intent.hasExtra(EXTRA_TODO_ITEM_ID)) {
                 throw RuntimeException("Unknown todo item id absent")
             }
@@ -52,86 +41,16 @@ class TodoItemActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUpLevelListView(){
-        val arrayAdapter = ArrayAdapter(
-            this,
-            R.layout.level_item,
-            Level.entries.toTypedArray().sliceArray(1..3)
-        )
-        binding.spinnerLevel.adapter = arrayAdapter
-    }
-
     private fun launchRightMode() {
-        when (screen_mode) {
-            MODE_ADD -> launchAddMode()
-            MODE_EDIT -> launchEditMode()
+        val fragment = when (screenMode) {
+            MODE_ADD -> TodoItemFragment.newInstanceAdd()
+            MODE_EDIT -> TodoItemFragment.newInstanceEdit(todoItemId)
+            else ->     throw RuntimeException("Unknown screen mode")
         }
-    }
-
-    private fun launchAddMode() {
-        binding.saveButton.setOnClickListener {
-            viewModel.addTodoItem(
-                binding.etTitle.text.toString(),
-                binding.etDescription.text.toString(),
-                binding.spinnerLevel.selectedItem.toString()
-            )
-        }
-    }
-
-    private fun launchEditMode() {
-        viewModel.getTodoItem(todoItemId)
-        viewModel.todoItem.observe(this) { todoItem ->
-            with(binding){
-                etTitle.setText(todoItem.title)
-                etDescription.setText(todoItem.description)
-            }
-        }
-        binding.saveButton.setOnClickListener {
-            viewModel.editTodoItem(
-                binding.etTitle.text.toString(),
-                binding.etDescription.text.toString(),
-                binding.spinnerLevel.selectedItem.toString()
-            )
-        }
-    }
-
-    private fun observerViewModel() {
-        viewModel.shouldCloseScreen.observe(this) {
-            finish()
-        }
-        viewModel.errorTitle.observe(this) { isError ->
-            val message = if (isError) {
-                getString(R.string.error_input_title)
-            } else {
-                null
-            }
-            binding.tilTitle.error = message
-        }
-        viewModel.errorDescription.observe(this) { isError ->
-            val message = if (isError) {
-                getString(R.string.error_input_description)
-            } else {
-                null
-            }
-            binding.tilDescription.error = message
-        }
-    }
-
-    private fun onTextChangedListeners() {
-        binding.etTitle.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.resetErrorTitle()
-            }
-        })
-        binding.etDescription.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                viewModel.resetErrorDescription()
-            }
-        })
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container_view,fragment)
+            .commit()
     }
 
     companion object {
@@ -155,5 +74,10 @@ class TodoItemActivity : AppCompatActivity() {
                 putExtra(EXTRA_TODO_ITEM_ID, todoItemId)
             }
         }
+    }
+
+    override fun onEditingFinished() {
+        finish()
+        Toast.makeText(this, "Saved succesfully", Toast.LENGTH_SHORT).show()
     }
 }

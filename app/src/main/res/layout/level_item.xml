@@ -7,6 +7,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     android:gravity="center"
+    android:textColor="#CEDED1"
+    android:background="#A8AFB3"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"

@@ -2,8 +2,9 @@ package com.jax.todolist.presentation.main
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -12,9 +13,10 @@ import com.jax.todolist.databinding.ActivityMainBinding
 import com.jax.todolist.presentation.adapter.TodoAdapter
 import com.jax.todolist.presentation.adapter.TodoAdapter.Companion.MAX_POOL_SIZE
 import com.jax.todolist.presentation.detail.TodoItemActivity
+import com.jax.todolist.presentation.detail.TodoItemFragment
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),TodoItemFragment.OnEditingFinishedEvent {
 
     private val viewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
@@ -28,9 +30,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setUpRecyclerView(this)
         observeViewModel()
-        onTodoItemAddClickListener()
+        setUpFabAddClickListener(this)
     }
 
+    private fun isOnePaneMode() = binding.fragmentContainerView == null
+    private fun launchFragment(fragment: Fragment){
+        supportFragmentManager.popBackStack()
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container_view,fragment)
+            .addToBackStack(null)
+            .commit()
+    }
     private fun setUpRecyclerView(context: Context) {
         with(binding.rvTodoListItems) {
             todoAdapter = TodoAdapter()
@@ -43,21 +54,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onTodoItemLongClickListener() {
-        todoAdapter.onTodoItemLongClickListener = {
-            viewModel.changeEnabledState(it)
+        todoAdapter.onTodoItemLongClickListener = {todoItem->
+            viewModel.changeEnabledState(todoItem)
         }
     }
 
     private fun onTodoItemClickListener(context: Context) {
         todoAdapter.onTodoItemClickListener = { todoItem ->
-            val intent = TodoItemActivity.newIntentEditItem(context, todoItem.id)
-            startActivity(intent)
+            if(isOnePaneMode()){
+                val intent = TodoItemActivity.newIntentEditItem(context, todoItem.id)
+                startActivity(intent)
+            }else{
+                launchFragment(TodoItemFragment.newInstanceEdit(todoItem.id))
+            }
         }
     }
-    private fun onTodoItemAddClickListener() {
-        binding.fbAddItem.setOnClickListener {
-            val intent = TodoItemActivity.newIntentAddItem(this)
-            startActivity(intent)
+
+    private fun setUpFabAddClickListener(context: Context) {
+        binding.fbAddItem.setOnClickListener {todoItem ->
+            if(isOnePaneMode()){
+                val intent = TodoItemActivity.newIntentAddItem(context)
+                startActivity(intent)
+            }else{
+                launchFragment(TodoItemFragment.newInstanceEdit(todoItem.id))
+            }
         }
     }
 
@@ -71,10 +91,7 @@ class MainActivity : AppCompatActivity() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder
             ): Boolean {
-                val fromPosition = viewHolder.adapterPosition
-                val toPosition = target.adapterPosition
-                todoAdapter.notifyItemMoved(fromPosition, toPosition)
-                return true
+                return false
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
@@ -88,7 +105,11 @@ class MainActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.todoList.observe(this) { todoList ->
             todoAdapter.submitList(todoList)
-            Log.d("Adding process", "Added TodoList: $todoList")
         }
+    }
+
+    override fun onEditingFinished() {
+        finish()
+        Toast.makeText(this, "Saved succesfully", Toast.LENGTH_SHORT).show()
     }
 }

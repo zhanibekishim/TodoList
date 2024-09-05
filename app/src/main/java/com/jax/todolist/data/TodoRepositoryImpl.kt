@@ -1,6 +1,5 @@
 package com.jax.todolist.data
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.jax.todolist.domain.entity.Level
@@ -35,7 +34,6 @@ object TodoRepositoryImpl : TodoRepository {
         }
         todoList.add(todoItem)
         updateTodoList()
-        Log.d("Adding process", "Added TodoItem: $todoItem")
     }
 
     override fun removeTodoItem(todoItem: TodoItem) {

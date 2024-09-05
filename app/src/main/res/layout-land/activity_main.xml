@@ -9,9 +9,10 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_todo_list_items"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="@id/guideline_middle"
         tools:listitem="@layout/low_enabled_todo_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -21,12 +22,27 @@
         android:layout_margin="14dp"
         android:clickable="true"
         android:focusable="true"
+        app:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/img"
         app:tint="@null"
-        app:backgroundTint="@color/white"
         tools:ignore="ContentDescription" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_middle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        tools:name="com.jax.todolist.presentation.detail.TodoItemFragment"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline_middle" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
