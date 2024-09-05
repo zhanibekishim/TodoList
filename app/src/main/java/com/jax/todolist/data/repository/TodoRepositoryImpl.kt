@@ -6,8 +6,9 @@ import com.jax.todolist.data.local.TodoDatabase
 import com.jax.todolist.data.mapper.TodoMapper
 import com.jax.todolist.domain.entity.TodoItem
 import com.jax.todolist.domain.repository.TodoRepository
+import javax.inject.Inject
 
-class TodoRepositoryImpl(
+class TodoRepositoryImpl @Inject constructor(
     application: Application
 ) : TodoRepository {
 

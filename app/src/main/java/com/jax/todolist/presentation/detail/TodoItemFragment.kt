@@ -14,11 +14,19 @@ import com.jax.todolist.R
 import com.jax.todolist.databinding.FragmentTodoItemBinding
 import com.jax.todolist.domain.entity.Level
 import com.jax.todolist.domain.entity.TodoItem
+import com.jax.todolist.presentation.TodoApp
+import com.jax.todolist.presentation.ViewModelFactory
+import javax.inject.Inject
 
 class TodoItemFragment : Fragment() {
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
     private val viewModel by lazy {
-        ViewModelProvider(this)[TodoItemViewModel::class.java]
+        ViewModelProvider(this, factory = viewModelFactory)[TodoItemViewModel::class.java]
+    }
+    private val component by lazy {
+        (requireActivity().application as TodoApp).component
     }
     private lateinit var onEditingFinishedEvent: OnEditingFinishedEvent
 
@@ -36,6 +44,7 @@ class TodoItemFragment : Fragment() {
     }
 
     override fun onAttach(context: Context) {
+        component.inject(this)
         super.onAttach(context)
         if(context is OnEditingFinishedEvent){
             onEditingFinishedEvent = context
@@ -81,7 +90,7 @@ class TodoItemFragment : Fragment() {
     }
 
     private fun setUpLevelListView() {
-        val levels = Level.entries.toTypedArray()
+        val levels = Level.entries.toTypedArray().slice(1..3)
         val arrayAdapter = ArrayAdapter(
             requireContext(),
             R.layout.level_item,

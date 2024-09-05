@@ -2,8 +2,9 @@ package com.jax.todolist.data.mapper
 
 import com.jax.todolist.data.local.TodoItemDbModel
 import com.jax.todolist.domain.entity.TodoItem
+import javax.inject.Inject
 
-class TodoMapper {
+class TodoMapper @Inject constructor(){
 
     fun dbModelToEntity(todoItemDbModel: TodoItemDbModel) = TodoItem(
         id = todoItemDbModel.id,

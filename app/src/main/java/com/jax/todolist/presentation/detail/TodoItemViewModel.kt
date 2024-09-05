@@ -1,26 +1,22 @@
 package com.jax.todolist.presentation.detail
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jax.todolist.data.repository.TodoRepositoryImpl
 import com.jax.todolist.domain.entity.Level
 import com.jax.todolist.domain.entity.TodoItem
 import com.jax.todolist.domain.usecase.AddTodoItemUseCase
 import com.jax.todolist.domain.usecase.EditTodoItemUseCase
 import com.jax.todolist.domain.usecase.GetTodoItemUseCase
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TodoItemViewModel(
-    application: Application
-) : AndroidViewModel(application) {
-
-    private val repository = TodoRepositoryImpl(application)
-    private val getTodoItemUseCase = GetTodoItemUseCase(repository)
-    private val addTodoItemUseCase = AddTodoItemUseCase(repository)
-    private val editTodoItemUseCase = EditTodoItemUseCase(repository)
+class TodoItemViewModel @Inject constructor(
+    private val getTodoItemUseCase: GetTodoItemUseCase,
+    private val addTodoItemUseCase: AddTodoItemUseCase,
+    private val editTodoItemUseCase: EditTodoItemUseCase,
+) : ViewModel() {
 
     private val _todoItem = MutableLiveData<TodoItem>()
     val todoItem: MutableLiveData<TodoItem>

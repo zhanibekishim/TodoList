@@ -10,22 +10,32 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.jax.todolist.R
 import com.jax.todolist.databinding.ActivityMainBinding
+import com.jax.todolist.presentation.TodoApp
+import com.jax.todolist.presentation.ViewModelFactory
 import com.jax.todolist.presentation.adapter.TodoAdapter
 import com.jax.todolist.presentation.adapter.TodoAdapter.Companion.MAX_POOL_SIZE
 import com.jax.todolist.presentation.detail.TodoItemActivity
 import com.jax.todolist.presentation.detail.TodoItemFragment
+import javax.inject.Inject
 
 
 class TodoListActivity : AppCompatActivity(),TodoItemFragment.OnEditingFinishedEvent {
 
+    @Inject
+    lateinit var viewmodelFactory: ViewModelFactory
     private val viewModel by lazy {
-        ViewModelProvider(this)[TodoListViewModel::class.java]
+        ViewModelProvider(this, factory = viewmodelFactory)[TodoListViewModel::class.java]
     }
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
+    private val component by lazy {
+        (application as TodoApp).component
+    }
     private lateinit var todoAdapter: TodoAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
+
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         setUpRecyclerView(this)
