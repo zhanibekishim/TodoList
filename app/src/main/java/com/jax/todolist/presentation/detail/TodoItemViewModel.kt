@@ -1,18 +1,23 @@
 package com.jax.todolist.presentation.detail
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.jax.todolist.data.TodoRepositoryImpl
+import androidx.lifecycle.viewModelScope
+import com.jax.todolist.data.repository.TodoRepositoryImpl
 import com.jax.todolist.domain.entity.Level
 import com.jax.todolist.domain.entity.TodoItem
 import com.jax.todolist.domain.usecase.AddTodoItemUseCase
 import com.jax.todolist.domain.usecase.EditTodoItemUseCase
 import com.jax.todolist.domain.usecase.GetTodoItemUseCase
+import kotlinx.coroutines.launch
 
-class TodoItemViewModel : ViewModel() {
+class TodoItemViewModel(
+    application: Application
+) : AndroidViewModel(application) {
 
-    private val repository = TodoRepositoryImpl
+    private val repository = TodoRepositoryImpl(application)
     private val getTodoItemUseCase = GetTodoItemUseCase(repository)
     private val addTodoItemUseCase = AddTodoItemUseCase(repository)
     private val editTodoItemUseCase = EditTodoItemUseCase(repository)
@@ -34,8 +39,10 @@ class TodoItemViewModel : ViewModel() {
         get() = _errorDescription
 
     fun getTodoItem(todoItemId: Int) {
-        val todoItem = getTodoItemUseCase(todoItemId)
-        _todoItem.value = todoItem
+        viewModelScope.launch {
+            val todoItem = getTodoItemUseCase(todoItemId)
+            _todoItem.value = todoItem
+        }
     }
 
     fun addTodoItem(title: String?, description: String?, level: String) {
@@ -50,13 +57,15 @@ class TodoItemViewModel : ViewModel() {
                 level = parsedLevel,
                 enabled = true
             )
-            _todoItem.value = todoItem
-            addTodoItemUseCase(todoItem)
-            shouldCloseScreen()
+            viewModelScope.launch {
+                _todoItem.value = todoItem
+                addTodoItemUseCase(todoItem)
+                shouldCloseScreen()
+            }
         }
     }
 
-    fun editTodoItem(title: String?, description: String?,level: String) {
+    fun editTodoItem(title: String?, description: String?, level: String) {
         val parsedTitle = parseText(title)
         val parsedDescription = parseText(description)
         val parsedLevel = parseLevel(level)
@@ -69,8 +78,10 @@ class TodoItemViewModel : ViewModel() {
                     description = parsedDescription,
                     level = parsedLevel
                 )
-                editTodoItemUseCase(newItem)
-                shouldCloseScreen()
+                viewModelScope.launch {
+                    editTodoItemUseCase(newItem)
+                    shouldCloseScreen()
+                }
             }
         }
     }
@@ -80,7 +91,7 @@ class TodoItemViewModel : ViewModel() {
     }
 
     private fun parseLevel(level: String): Level {
-        return when(level) {
+        return when (level) {
             LEVEL_HIGH -> Level.HIGH
             LEVEL_MEDIUM -> Level.MEDIUM
             LEVEL_LOW -> Level.LOW

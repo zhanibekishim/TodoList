@@ -6,7 +6,7 @@ import com.jax.todolist.domain.repository.TodoRepository
 class GetTodoItemUseCase(
     private val todoRepository: TodoRepository
 ) {
-    operator fun invoke(todoItemId: Int): TodoItem {
+    suspend operator fun invoke(todoItemId: Int): TodoItem {
         return todoRepository.getTodoItem(todoItemId)
     }
 }

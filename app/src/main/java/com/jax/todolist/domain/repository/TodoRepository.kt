@@ -5,9 +5,9 @@ import com.jax.todolist.domain.entity.TodoItem
 
 interface TodoRepository {
 
-    fun addTodoItem(todoItem: TodoItem)
-    fun removeTodoItem(todoItem: TodoItem)
-    fun editTodoItem(todoItem: TodoItem)
-    fun getTodoItem(todoItemId: Int): TodoItem
+    suspend fun addTodoItem(todoItem: TodoItem)
+    suspend fun removeTodoItem(todoItem: TodoItem)
+    suspend fun editTodoItem(todoItem: TodoItem)
+    suspend fun getTodoItem(todoItemId: Int): TodoItem
     fun getTodoList(): LiveData<List<TodoItem>>
 }

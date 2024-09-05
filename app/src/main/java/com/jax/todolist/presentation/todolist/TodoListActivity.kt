@@ -1,4 +1,4 @@
-package com.jax.todolist.presentation.main
+package com.jax.todolist.presentation.todolist
 
 import android.content.Context
 import android.os.Bundle
@@ -16,10 +16,10 @@ import com.jax.todolist.presentation.detail.TodoItemActivity
 import com.jax.todolist.presentation.detail.TodoItemFragment
 
 
-class MainActivity : AppCompatActivity(),TodoItemFragment.OnEditingFinishedEvent {
+class TodoListActivity : AppCompatActivity(),TodoItemFragment.OnEditingFinishedEvent {
 
     private val viewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
+        ViewModelProvider(this)[TodoListViewModel::class.java]
     }
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
