@@ -46,9 +46,9 @@ class TodoItemFragment : Fragment() {
     override fun onAttach(context: Context) {
         component.inject(this)
         super.onAttach(context)
-        if(context is OnEditingFinishedEvent){
+        if (context is OnEditingFinishedEvent) {
             onEditingFinishedEvent = context
-        }else{
+        } else {
             throw RuntimeException("Activity must implement OnEditingFinishedEvent")
         }
     }
@@ -115,6 +115,18 @@ class TodoItemFragment : Fragment() {
                 binding.etDescription.text.toString(),
                 binding.spinnerLevel.selectedItem.toString()
             )
+            /* thread {
+                 context?.contentResolver?.insert(
+                     Uri.parse("content://com.jax.todolist/todolist"),
+                     TodoContentProvider.contentValuesToTodoItem(
+                         id = 0,
+                         title = binding.etTitle.text.toString(),
+                         description = binding.etDescription.text.toString(),
+                         enabled = true,
+                         levelString = binding.spinnerLevel.selectedItem.toString()
+                     )
+                 )
+             }*/
         }
     }
 
@@ -137,9 +149,21 @@ class TodoItemFragment : Fragment() {
                 binding.etDescription.text.toString(),
                 (level ?: Level.UNKNOWN).toString()
             )
+            /*thread {
+                context?.contentResolver?.update(
+                    Uri.parse("content://com.jax.todolist/todolist"),
+                    TodoContentProvider.contentValuesToTodoItem(
+                        id = todoItemId,
+                        title = binding.etTitle.text.toString(),
+                        description = binding.etDescription.text.toString(),
+                        levelString = (level ?: Level.UNKNOWN).toString(),
+                    ),
+                    null,
+                    TodoContentProvider.selectionArgs(todoItemId)
+                )
+            }*/
         }
     }
-
 
     private fun observerViewModel() {
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {

@@ -19,7 +19,7 @@ import com.jax.todolist.presentation.detail.TodoItemFragment
 import javax.inject.Inject
 
 
-class TodoListActivity : AppCompatActivity(),TodoItemFragment.OnEditingFinishedEvent {
+class TodoListActivity : AppCompatActivity(), TodoItemFragment.OnEditingFinishedEvent {
 
     @Inject
     lateinit var viewmodelFactory: ViewModelFactory
@@ -44,14 +44,15 @@ class TodoListActivity : AppCompatActivity(),TodoItemFragment.OnEditingFinishedE
     }
 
     private fun isOnePaneMode() = binding.fragmentContainerView == null
-    private fun launchFragment(fragment: Fragment){
+    private fun launchFragment(fragment: Fragment) {
         supportFragmentManager.popBackStack()
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment_container_view,fragment)
+            .replace(R.id.fragment_container_view, fragment)
             .addToBackStack(null)
             .commit()
     }
+
     private fun setUpRecyclerView(context: Context) {
         with(binding.rvTodoListItems) {
             todoAdapter = TodoAdapter()
@@ -64,28 +65,28 @@ class TodoListActivity : AppCompatActivity(),TodoItemFragment.OnEditingFinishedE
     }
 
     private fun onTodoItemLongClickListener() {
-        todoAdapter.onTodoItemLongClickListener = {todoItem->
+        todoAdapter.onTodoItemLongClickListener = { todoItem ->
             viewModel.changeEnabledState(todoItem)
         }
     }
 
     private fun onTodoItemClickListener(context: Context) {
         todoAdapter.onTodoItemClickListener = { todoItem ->
-            if(isOnePaneMode()){
+            if (isOnePaneMode()) {
                 val intent = TodoItemActivity.newIntentEditItem(context, todoItem.id)
                 startActivity(intent)
-            }else{
+            } else {
                 launchFragment(TodoItemFragment.newInstanceEdit(todoItem.id))
             }
         }
     }
 
     private fun setUpFabAddClickListener(context: Context) {
-        binding.fbAddItem.setOnClickListener {todoItem ->
-            if(isOnePaneMode()){
+        binding.fbAddItem.setOnClickListener { todoItem ->
+            if (isOnePaneMode()) {
                 val intent = TodoItemActivity.newIntentAddItem(context)
                 startActivity(intent)
-            }else{
+            } else {
                 launchFragment(TodoItemFragment.newInstanceEdit(todoItem.id))
             }
         }
@@ -107,6 +108,11 @@ class TodoListActivity : AppCompatActivity(),TodoItemFragment.OnEditingFinishedE
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val item = todoAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.removeTodoItem(item)
+                /*contentResolver.delete(
+                    Uri.parse("content://com.jax.todolist/todolist"),
+                    null,
+                    TodoContentProvider.selectionArgs(item.id)
+                )*/
             }
         })
         itemTouchHelper.attachToRecyclerView(binding.rvTodoListItems)

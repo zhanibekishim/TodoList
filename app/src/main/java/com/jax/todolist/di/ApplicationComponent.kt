@@ -1,6 +1,7 @@
 package com.jax.todolist.di
 
 import android.app.Application
+import com.jax.todolist.data.providers.TodoContentProvider
 import com.jax.todolist.presentation.detail.TodoItemFragment
 import com.jax.todolist.presentation.todolist.TodoListActivity
 import dagger.BindsInstance
@@ -14,6 +15,7 @@ interface ApplicationComponent {
 
     fun inject(todoListActivity: TodoListActivity)
     fun inject(todoItemFragment: TodoItemFragment)
+    fun inject(todoContentProvider: TodoContentProvider)
 
     @Component.Factory
     interface Factory{

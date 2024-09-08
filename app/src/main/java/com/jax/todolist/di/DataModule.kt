@@ -17,6 +17,7 @@ interface DataModule {
     fun bindsTodoRepository(impl: TodoRepositoryImpl): TodoRepository
 
     companion object {
+        @ApplicationScope
         @Provides
         fun provides(
             application: Application
